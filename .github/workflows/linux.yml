@@ -1,6 +1,5 @@
-name: Build Aseprite (linux x64)
+name: Build Aseprite (Linux x64)
 on:
-  push:
   workflow_dispatch:
 
 jobs:
