@@ -46,10 +46,11 @@ jobs:
         fi
         cd aseprite/
         cmake -S . -B build -G Ninja \
-          -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+          -DCMAKE_BUILD_TYPE=Release \
           -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 \
           -DENABLE_TESTS=OFF \
           -DENABLE_TESTS=OFF \
+          -DLAF_OS_BACKEND=skia \
           -DENABLE_CCACHE=$enable_ccache
     - name: Compiling
       shell: bash
