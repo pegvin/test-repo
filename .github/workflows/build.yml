@@ -7,7 +7,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [windows-latest, macos-latest, ubuntu-latest]
-        build_type: [RelWithDebInfo]
+        build_type: [Release]
         enable_ui: [on]
     steps:
     - uses: actions/checkout@v2
