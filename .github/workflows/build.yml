@@ -56,52 +56,64 @@ jobs:
         path: ./aseprite/build/bin
         if-no-files-found: error
 
-  # Build-Linux:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - uses: actions/checkout@v2
+  Build-Linux:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
 
-  #   - name: Get Repo
-  #     run: git clone https://github.com/aseprite/aseprite --recursive -b v1.2.40
+    - name: Get Repo
+      run: git clone https://github.com/aseprite/aseprite --recursive -b v1.2.40
 
-  #   - name: ccache
-  #     uses: hendrikmuhs/ccache-action@v1
-  #     with:
-  #       key: ubuntu-latest-on
+    - name: Get Skia Pre-Built
+      run: |
+        curl -L https://github.com/aseprite/skia/releases/download/m102-861e4743af/Skia-Linux-Release-x64-libstdc++.zip -o skia.zip
+        mkdir -p $HOME/deps/skia
+        unzip skia.zip -d $HOME/deps/skia
 
-  #   - uses: seanmiddleditch/gha-setup-ninja@master
+    - name: ccache
+      uses: hendrikmuhs/ccache-action@v1
+      with:
+        key: ubuntu-latest-on
 
-  #   - name: Install Dependencies
-  #     shell: bash
-  #     run: |
-  #       sudo apt-get update -qq
-  #       sudo apt-get install -y libx11-dev libxcursor-dev libxi-dev
+    - uses: seanmiddleditch/gha-setup-ninja@master
 
-  #   - name: Generating Makefiles
-  #     shell: bash
-  #     run: |
-  #       export enable_ccache=on
-  #       cd aseprite/
-  #       cmake -S . -B build -G Ninja \
-  #         -DCMAKE_BUILD_TYPE=Release \
-  #         -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 \
-  #         -DENABLE_TESTS=OFF \
-  #         -DENABLE_TESTS=OFF \
-  #         -DLAF_OS_BACKEND=skia \
-  #         -DLAF_BACKEND=skia \
-  #         -DENABLE_CCACHE=$enable_ccache
+    - name: Install Dependencies
+      shell: bash
+      run: |
+        sudo apt-get update -qq
+        sudo apt-get install -y g++ clang-10 libc++-10-dev libc++abi-10-dev cmake ninja-build libx11-dev libxcursor-dev libxi-dev libgl1-mesa-dev libfontconfig1-dev
 
-  #   - name: Compiling
-  #     shell: bash
-  #     run: |
-  #       cd ./aseprite/build/ && ninja && echo "Build Directory Content:" && ls
+    - name: Generating Makefiles
+      shell: bash
+      run: |
+        export enable_ccache=on
+        export CC=clang
+        export CXX=clang++
+        cd aseprite/
+        mkdir build
+        cd build
+        cmake \
+          -G Ninja \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_CXX_FLAGS:STRING=-stdlib=libc++ \
+          -DCMAKE_EXE_LINKER_FLAGS:STRING=-stdlib=libc++ \
+          -DLAF_BACKEND=skia \
+          -DSKIA_DIR=$HOME/deps/skia \
+          -DSKIA_LIBRARY_DIR=$HOME/deps/skia/out/Release-x64 \
+          -DSKIA_LIBRARY=$HOME/deps/skia/out/Release-x64/libskia.a \
+          -DENABLE_CCACHE=$enable_ccache \
 
-  #   - name: Upload Artifacts
-  #     uses: actions/upload-artifact@v2
-  #     with:
-  #       name: aseprite-${{ runner.os }}-x64
-  #       path: ./aseprite/build/bin
-  #       if-no-files-found: error
+    - name: Compiling
+      shell: bash
+      run: |
+        cd ./aseprite/build/ && ninja aseprite
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: aseprite-${{ runner.os }}-x64
+        path: ./aseprite/build/bin
+        if-no-files-found: error
 
   # Build-macOS:
   #   runs-on: macos-latest
