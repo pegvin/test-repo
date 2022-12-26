@@ -1,0 +1,98 @@
+name: Build Aseprite (macOS x64 & arm64)
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build-x64:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Get Repo
+      run: git clone https://github.com/aseprite/aseprite --recursive -b v1.2.40
+
+    - name: Get Skia Pre-Built
+      run: |
+        curl -L https://github.com/aseprite/skia/releases/download/m102-861e4743af/Skia-macOS-Release-x64.zip -o skia.zip
+        mkdir -p $HOME/deps/skia
+        unzip skia.zip -d $HOME/deps/skia
+
+    - name: ccache
+      uses: hendrikmuhs/ccache-action@v1
+    - uses: seanmiddleditch/gha-setup-ninja@master
+
+    - name: Generating Makefiles
+      shell: bash
+      run: |
+        export enable_ccache=on
+        cd aseprite/
+        cmake -S . -B build -G Ninja \
+          -DCMAKE_OSX_ARCHITECTURES=x86_64 \
+          -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 \
+          -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk \
+          -DLAF_BACKEND=skia \
+          -DSKIA_DIR=$HOME/deps/skia \
+          -DSKIA_LIBRARY_DIR=$HOME/deps/skia/out/Release-x64 \
+          -DSKIA_LIBRARY=$HOME/deps/skia/out/Release-x64/libskia.a \
+          -DENABLE_TESTS=OFF \
+          -DENABLE_TESTS=OFF \
+          -DENABLE_CCACHE=$enable_ccache
+
+    - name: Compiling
+      shell: bash
+      run: cd ./aseprite/build/ && ninja aseprite
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: aseprite-macos-x64
+        path: ./aseprite/build/bin
+        if-no-files-found: error
+
+  build-arm64:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Get Repo
+      run: git clone https://github.com/aseprite/aseprite --recursive -b v1.2.40
+
+    - name: Get Skia Pre-Built
+      run: |
+        curl -L https://github.com/aseprite/skia/releases/download/m102-861e4743af/Skia-macOS-Release-arm64.zip -o skia.zip
+        mkdir -p $HOME/deps/skia
+        unzip skia.zip -d $HOME/deps/skia
+
+    - name: ccache
+      uses: hendrikmuhs/ccache-action@v1
+    - uses: seanmiddleditch/gha-setup-ninja@master
+
+    - name: Generating Makefiles
+      shell: bash
+      run: |
+        export enable_ccache=on
+        cd aseprite/
+        cmake -S . -B build -G Ninja \
+          -DCMAKE_OSX_ARCHITECTURES=arm64 \
+          -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0 \
+          -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk \
+          -DLAF_BACKEND=skia \
+          -DSKIA_DIR=$HOME/deps/skia \
+          -DSKIA_LIBRARY_DIR=$HOME/deps/skia/out/Release-arm64 \
+          -DSKIA_LIBRARY=$HOME/deps/skia/out/Release-arm64/libskia.a \
+          -DPNG_ARM_NEON:STRING=on \
+          -DENABLE_TESTS=OFF \
+          -DENABLE_TESTS=OFF \
+          -DENABLE_CCACHE=$enable_ccache
+
+    - name: Compiling
+      shell: bash
+      run: cd ./aseprite/build/ && ninja aseprite
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: aseprite-macos-arm64
+        path: ./aseprite/build/bin
+        if-no-files-found: error
