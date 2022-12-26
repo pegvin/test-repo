@@ -51,6 +51,7 @@ jobs:
           -DENABLE_TESTS=OFF \
           -DENABLE_TESTS=OFF \
           -DLAF_OS_BACKEND=skia \
+          -DLAF_BACKEND=skia \
           -DENABLE_CCACHE=$enable_ccache
     - name: Compiling
       shell: bash
