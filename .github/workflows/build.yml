@@ -18,8 +18,10 @@ jobs:
       with:
         submodules: 'recursive'
 
-    - name: Clone Repo
-      run: git clone https://github.com/aseprite/aseprite --recursive -b v1.2.40
+    - name: Get Repo
+      run: |
+        git clone https://github.com/aseprite/aseprite --recursive -b v1.2.40
+        cd aseprite/
 
     - name: ccache
       uses: hendrikmuhs/ccache-action@v1
