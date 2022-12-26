@@ -55,3 +55,10 @@ jobs:
       shell: bash
       run: |
         cd ./aseprite/build/ && ninja && echo "Build Directory Content:" && ls
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: aseprite-${{ runner.os }}-x64
+        path: ./aseprite/build/bin
+        if-no-files-found: error
