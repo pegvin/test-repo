@@ -4,60 +4,60 @@ on:
   workflow_dispatch:
 
 jobs:
-  Build-Windows:
-    runs-on: windows-latest
-    steps:
-    - name: Get Repo
-      run: |
-        git clone https://github.com/aseprite/aseprite --recursive -b v1.2.40
+  # Build-Windows:
+  #   runs-on: windows-latest
+  #   steps:
+  #   - name: Get Repo
+  #     run: |
+  #       git clone https://github.com/aseprite/aseprite --recursive -b v1.2.40
 
-    - name: Get Skia Pre-Built
-      run: |
-        curl -L https://github.com/aseprite/skia/releases/download/m102-861e4743af/Skia-Windows-Release-x64.zip -o skia.zip
-        mkdir -p C:\deps\skia\
-        7z x skia.zip -oC:\deps\skia\
+  #   - name: Get Skia Pre-Built
+  #     run: |
+  #       curl -L https://github.com/aseprite/skia/releases/download/m102-861e4743af/Skia-Windows-Release-x64.zip -o skia.zip
+  #       mkdir -p C:\deps\skia\
+  #       7z x skia.zip -oC:\deps\skia\
 
-    - uses: hendrikmuhs/ccache-action@v1
-    - uses: seanmiddleditch/gha-setup-ninja@master
+  #   - uses: hendrikmuhs/ccache-action@v1
+  #   - uses: seanmiddleditch/gha-setup-ninja@master
 
-    - name: Workaround for windows-2022 and cmake 3.25.0
-      shell: bash
-      run: rm -rf C:/Strawberry/
+  #   - name: Workaround for windows-2022 and cmake 3.25.0
+  #     shell: bash
+  #     run: rm -rf C:/Strawberry/
 
-    - uses: ilammy/msvc-dev-cmd@v1
+  #   - uses: ilammy/msvc-dev-cmd@v1
 
-    - name: ccache
-      uses: hendrikmuhs/ccache-action@v1
+  #   - name: ccache
+  #     uses: hendrikmuhs/ccache-action@v1
 
-    - name: Generating Makefiles
-      shell: bash
-      run: |
-        export enable_ccache=off
-        cd aseprite/
-        cmake -S . -B build -G Ninja \
-          -DCMAKE_BUILD_TYPE=Release \
-          -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 \
-          -DENABLE_TESTS=OFF \
-          -DENABLE_TESTS=OFF \
-          -DLAF_BACKEND=skia \
-          -DSKIA_DIR=C:/deps/skia \
-          -DSKIA_LIBRARY_DIR=C:/deps/skia/out/Release-x64 \
-          -DSKIA_LIBRARY=C:/deps/skia/out/Release-x64/skia.lib \
-          -DENABLE_CCACHE=$enable_ccache
+  #   - name: Generating Makefiles
+  #     shell: bash
+  #     run: |
+  #       export enable_ccache=off
+  #       cd aseprite/
+  #       cmake -S . -B build -G Ninja \
+  #         -DCMAKE_BUILD_TYPE=Release \
+  #         -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 \
+  #         -DENABLE_TESTS=OFF \
+  #         -DENABLE_TESTS=OFF \
+  #         -DLAF_BACKEND=skia \
+  #         -DSKIA_DIR=C:/deps/skia \
+  #         -DSKIA_LIBRARY_DIR=C:/deps/skia/out/Release-x64 \
+  #         -DSKIA_LIBRARY=C:/deps/skia/out/Release-x64/skia.lib \
+  #         -DENABLE_CCACHE=$enable_ccache
 
-    - name: Compiling
-      shell: bash
-      run: cd ./aseprite/build/ && ninja
+  #   - name: Compiling
+  #     shell: bash
+  #     run: cd ./aseprite/build/ && ninja
 
-    - name: Upload Artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        name: aseprite-${{ runner.os }}-x64
-        path: ./aseprite/build/bin
-        if-no-files-found: error
+  #   - name: Upload Artifacts
+  #     uses: actions/upload-artifact@v2
+  #     with:
+  #       name: aseprite-${{ runner.os }}-x64
+  #       path: ./aseprite/build/bin
+  #       if-no-files-found: error
 
   Build-Linux:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
 
