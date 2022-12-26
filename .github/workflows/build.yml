@@ -40,9 +40,9 @@ jobs:
           -DENABLE_TESTS=OFF \
           -DENABLE_TESTS=OFF \
           -DLAF_BACKEND=skia \
-          -DSKIA_DIR=C:\deps\skia \
-          -DSKIA_LIBRARY_DIR=C:\deps\skia\out\Release-x64 \
-          -DSKIA_LIBRARY=C:\deps\skia\out\Release-x64\skia.lib \
+          -DSKIA_DIR=C:/deps/skia \
+          -DSKIA_LIBRARY_DIR=C:/deps/skia/out/Release-x64 \
+          -DSKIA_LIBRARY=C:/deps/skia/out/Release-x64/skia.lib \
           -DENABLE_CCACHE=$enable_ccache
 
     - name: Compiling
