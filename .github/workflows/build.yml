@@ -16,7 +16,6 @@ jobs:
     - name: Get Repo
       run: |
         git clone https://github.com/aseprite/aseprite --recursive -b v1.2.40
-        cd aseprite/
     - name: ccache
       uses: hendrikmuhs/ccache-action@v1
       if: runner.os == 'Linux'
@@ -45,10 +44,11 @@ jobs:
         else
           export enable_ccache=on
         fi
+        cd aseprite/
         cmake -S . -B build -G Ninja \
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
           -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 \
-          -DENABLE_TESTS=ON \
+          -DENABLE_TESTS=OFF \
           -DENABLE_UI=${{ matrix.enable_ui }} \
           -DENABLE_CCACHE=$enable_ccache
     - name: Compiling
