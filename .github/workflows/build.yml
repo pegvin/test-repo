@@ -9,8 +9,6 @@ jobs:
       fail-fast: false
       matrix:
         os: [windows-latest, macos-latest, ubuntu-latest]
-        build_type: [Release]
-        enable_ui: [on]
     steps:
     - uses: actions/checkout@v2
       with:
@@ -48,10 +46,10 @@ jobs:
         fi
         cd aseprite/
         cmake -S . -B build -G Ninja \
-          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+          -DCMAKE_BUILD_TYPE=RelWithDebInfo \
           -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 \
           -DENABLE_TESTS=OFF \
-          -DENABLE_UI=${{ matrix.enable_ui }} \
+          -DENABLE_TESTS=OFF \
           -DENABLE_CCACHE=$enable_ccache
     - name: Compiling
       shell: bash
