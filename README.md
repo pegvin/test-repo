@@ -3,6 +3,8 @@ building aseprite from source made as easy as creating a simple github account.
 
 https://user-images.githubusercontent.com/75035219/209579067-40499caf-80d1-47ef-a3c2-64af47c04d5b.mp4
 
+**NOTE**: after forking the repository, please make it private because anybody can download your generated build which is a direct violation of the EULA.
+
 if this really helped you, please join aseprite's discord server and thank them for this masterpiece, and if possible buy it in future.
 
 ---
