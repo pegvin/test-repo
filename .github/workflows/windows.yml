@@ -48,10 +48,6 @@ jobs:
       shell: bash
       run: cd ./aseprite/build/ && ninja
 
-    - name: Remove Unused Files
-      shell: bash
-      run: cd ./aseprite/build/bin/ && shopt -s extglob && rm -- !(data|aseprite.exe)
-
     - name: Upload Artifacts
       uses: actions/upload-artifact@v2
       with:
