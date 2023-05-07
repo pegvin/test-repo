@@ -14,13 +14,12 @@ jobs:
 
     - name: Get Skia Pre-Built
       run: |
-        sudo rm -rf $HOME/deps/skia/
+        rmdir /s /q C:\deps\skia\
         curl -L https://github.com/aseprite/skia/releases/download/m102-861e4743af/Skia-Windows-Release-x64.zip -o skia.zip
         mkdir -p C:\deps\skia\
         7z x skia.zip -oC:\deps\skia\
 
     - uses: hendrikmuhs/ccache-action@v1
-    - uses: seanmiddleditch/gha-setup-ninja@master
 
     - name: Workaround for windows-2022 and cmake 3.25.0
       shell: bash
@@ -31,7 +30,7 @@ jobs:
     - name: ccache
       uses: hendrikmuhs/ccache-action@v1
 
-    - name: Generating Makefiles
+    - name: Generating Build Files
       shell: bash
       run: |
         export enable_ccache=off
@@ -47,7 +46,7 @@ jobs:
           -DSKIA_LIBRARY=C:/deps/skia/out/Release-x64/skia.lib \
           -DENABLE_CCACHE=$enable_ccache
 
-    - name: Compiling
+    - name: Compile
       shell: bash
       run: |
         cd aseprite/
