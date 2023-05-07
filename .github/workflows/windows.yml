@@ -10,7 +10,7 @@ jobs:
     steps:
     - name: Get Repo
       run: |
-        curl -L https://github.com/aseprite/aseprite/releases/download/${{ github.event.inputs.aseprite-tag }}/Aseprite-${{ github.event.inputs.aseprite-tag }}-Source.zip -o ase.zip
+        curl -L https://github.com/aseprite/aseprite/releases/download/${{ github.event.inputs.aseprite-tag }}/Aseprite-${{ github.event.inputs.aseprite-tag }}-Source.zip --output ase.zip
         7z x ase.zip -o.\
 
     - name: Get Skia Pre-Built
