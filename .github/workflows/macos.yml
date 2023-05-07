@@ -19,6 +19,7 @@ jobs:
     - name: Get Skia Pre-Built x64
       if: ${{ matrix.architecture }} == "x86_64"
       run: |
+        sudo rm -rf $HOME/deps/skia/
         curl -L https://github.com/aseprite/skia/releases/download/m102-861e4743af/Skia-macOS-Release-x64.zip -o skia.zip
         mkdir -p $HOME/deps/skia
         unzip skia.zip -d $HOME/deps/skia
@@ -29,6 +30,7 @@ jobs:
     - name: Get Skia Pre-Built arm64
       if: ${{ matrix.architecture }} == "arm64"
       run: |
+        sudo rm -rf $HOME/deps/skia/
         curl -L https://github.com/aseprite/skia/releases/download/m102-861e4743af/Skia-macOS-Release-arm64.zip -o skia.zip
         mkdir -p $HOME/deps/skia
         unzip skia.zip -d $HOME/deps/skia
