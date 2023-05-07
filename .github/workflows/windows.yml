@@ -10,14 +10,14 @@ jobs:
     steps:
     - name: Get Repo
       run: |
-        git clone https://github.com/aseprite/aseprite --recursive -b ${{ github.event.inputs.aseprite-tag }}
+        curl -L https://github.com/aseprite/aseprite/releases/download/${{ github.event.inputs.aseprite-tag }}/Aseprite-${{ github.event.inputs.aseprite-tag }}-Source.zip -o ase.zip
+        7z x ase.zip -o.\
 
     - name: Get Skia Pre-Built
       run: |
-        rm -rf C:\deps\skia\
         curl -L https://github.com/aseprite/skia/releases/download/m102-861e4743af/Skia-Windows-Release-x64.zip -o skia.zip
-        mkdir -p C:\deps\skia\
-        7z x skia.zip -oC:\deps\skia\
+        mkdir -p .\skia
+        7z x skia.zip -o.\skia\
 
     - uses: hendrikmuhs/ccache-action@v1
 
@@ -34,27 +34,25 @@ jobs:
       shell: bash
       run: |
         export enable_ccache=off
-        cd aseprite/
         cmake -S . -B build -G "Visual Studio 17 2022" \
           -DCMAKE_BUILD_TYPE=Release \
           -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 \
           -DENABLE_TESTS=OFF \
           -DENABLE_TESTS=OFF \
           -DLAF_BACKEND=skia \
-          -DSKIA_DIR=C:/deps/skia \
-          -DSKIA_LIBRARY_DIR=C:/deps/skia/out/Release-x64 \
-          -DSKIA_LIBRARY=C:/deps/skia/out/Release-x64/skia.lib \
+          -DSKIA_DIR=./skia \
+          -DSKIA_LIBRARY_DIR=./skia/out/Release-x64 \
+          -DSKIA_LIBRARY=./skia/out/Release-x64/skia.lib \
           -DENABLE_CCACHE=$enable_ccache
 
     - name: Compile
       shell: bash
       run: |
-        cd aseprite/
         cmake --build build/ --parallel 3 --config Release
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v2
       with:
         name: aseprite-windows-x64
-        path: ./aseprite/build/bin
+        path: ./build/bin
         if-no-files-found: error
