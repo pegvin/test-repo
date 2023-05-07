@@ -10,7 +10,7 @@ jobs:
     steps:
     - name: Get Repo
       run: |
-        git clone https://github.com/aseprite/aseprite --recursive -b v1.2.40
+        git clone https://github.com/aseprite/aseprite --recursive -b ${{ github.event.inputs.aseprite-tag }}
 
     - name: Get Skia Pre-Built
       run: |
