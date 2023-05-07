@@ -1,7 +1,9 @@
 name: Build Aseprite (Windows x64)
 on:
   workflow_dispatch:
-
+    inputs:
+      aseprite-tag:
+        required: true
 jobs:
   build:
     runs-on: windows-latest
@@ -33,7 +35,7 @@ jobs:
       run: |
         export enable_ccache=off
         cd aseprite/
-        cmake -S . -B build -G Ninja \
+        cmake -S . -B build -G "Visual Studio 17 2022" \
           -DCMAKE_BUILD_TYPE=Release \
           -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 \
           -DENABLE_TESTS=OFF \
