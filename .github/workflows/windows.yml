@@ -48,7 +48,7 @@ jobs:
 
     - name: Compiling
       shell: bash
-      run: cd ./aseprite/build/ && ninja
+      run: cmake --build build/ --parallel 3 --config Release
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v2
