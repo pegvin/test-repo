@@ -16,8 +16,8 @@ jobs:
     - name: Get Skia Pre-Built
       run: |
         curl -L https://github.com/aseprite/skia/releases/download/m102-861e4743af/Skia-Windows-Release-x64.zip -o skia.zip
-        mkdir -p .\skia
-        7z x skia.zip -o.\skia\
+        mkdir -p skia\
+        7z x skia.zip -oskia\
 
     - uses: hendrikmuhs/ccache-action@v1
 
