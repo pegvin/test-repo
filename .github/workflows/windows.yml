@@ -14,7 +14,7 @@ jobs:
 
     - name: Get Skia Pre-Built
       run: |
-        rm -r C:\deps\skia\
+        rm -rf C:\deps\skia\
         curl -L https://github.com/aseprite/skia/releases/download/m102-861e4743af/Skia-Windows-Release-x64.zip -o skia.zip
         mkdir -p C:\deps\skia\
         7z x skia.zip -oC:\deps\skia\
