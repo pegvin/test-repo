@@ -14,6 +14,7 @@ jobs:
 
     - name: Get Skia Pre-Built
       run: |
+        sudo rm -rf $HOME/deps/skia/
         curl -L https://github.com/aseprite/skia/releases/download/m102-861e4743af/Skia-Windows-Release-x64.zip -o skia.zip
         mkdir -p C:\deps\skia\
         7z x skia.zip -oC:\deps\skia\
@@ -48,7 +49,9 @@ jobs:
 
     - name: Compiling
       shell: bash
-      run: cmake --build build/ --parallel 3 --config Release
+      run: |
+        cd aseprite/
+        cmake --build build/ --parallel 3 --config Release
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v2
