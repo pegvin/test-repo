@@ -7,67 +7,86 @@ on:
 jobs:
   osx-x86_64:
     runs-on: macos-12 
-    strategy:
-      matrix:
-        architecture: [x86_64, arm64]
     steps:
     - uses: actions/checkout@v2
 
     - name: Get Repo
-      run: git clone https://github.com/aseprite/aseprite --recursive -b ${{ github.event.inputs.aseprite-tag }}
+      run: |
+        curl -L https://github.com/aseprite/aseprite/releases/download/${{ github.event.inputs.aseprite-tag }}/Aseprite-${{ github.event.inputs.aseprite-tag }}-Source.zip --output ase.zip
+        unzip ase.zip -d ./
+        rm ase.zip
 
     - name: Get Skia Pre-Built x64
-      if: ${{ matrix.architecture }} == "x86_64"
       run: |
         sudo rm -rf $HOME/deps/skia/
         curl -L https://github.com/aseprite/skia/releases/download/m102-861e4743af/Skia-macOS-Release-x64.zip -o skia.zip
         mkdir -p $HOME/deps/skia
         unzip skia.zip -d $HOME/deps/skia
-        export SKIA_DIR=$HOME/deps/skia
-        export SKIA_LIBRARY_DIR=$SKIA_DIR/out/Release-x64
-        export SKIA_LIBRARY=$SKIA_LIBRARY_DIR/libskia.a
-
-    - name: Get Skia Pre-Built arm64
-      if: ${{ matrix.architecture }} == "arm64"
-      run: |
-        sudo rm -rf $HOME/deps/skia/
-        curl -L https://github.com/aseprite/skia/releases/download/m102-861e4743af/Skia-macOS-Release-arm64.zip -o skia.zip
-        mkdir -p $HOME/deps/skia
-        unzip skia.zip -d $HOME/deps/skia
-        export SKIA_DIR=$HOME/deps/skia
-        export SKIA_LIBRARY_DIR=$SKIA_DIR/out/Release-arm64
-        export SKIA_LIBRARY=$SKIA_LIBRARY_DIR/libskia.a
-
-    - name: ccache
-      uses: hendrikmuhs/ccache-action@v1
-    - uses: seanmiddleditch/gha-setup-ninja@master
 
     - name: Generating Makefiles
-      shell: bash
       run: |
-        export enable_ccache=on
-        cd aseprite/
         cmake -S . -B build -G "Xcode" \
-          -DCMAKE_OSX_ARCHITECTURES=${{ matrix.architecture }} \
+          -DCMAKE_OSX_ARCHITECTURES=x86_64 \
           -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 \
           -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk \
           -DLAF_BACKEND=skia \
-          -DSKIA_DIR=$SKIA_DIR \
-          -DSKIA_LIBRARY_DIR=$SKIA_LIBRARY_DIR \
-          -DSKIA_LIBRARY=$SKIA_LIBRARY \
+          -DSKIA_DIR=$HOME/deps/skia \
+          -DSKIA_LIBRARY_DIR=$HOME/deps/skia/out/Release-x64 \
+          -DSKIA_LIBRARY=$HOME/deps/skia/out/Release-x64/libskia.a \
           -DENABLE_TESTS=OFF \
           -DENABLE_TESTS=OFF \
-          -DENABLE_CCACHE=$enable_ccache
+          -DENABLE_CCACHE=OFF
 
     - name: Compiling
-      shell: bash
       run: |
-        cd aseprite/
         cmake --build build/ --parallel 3 --config Release
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: aseprite-macos-${{ matrix.architecture }}
-        path: ./aseprite/build/bin
+        name: aseprite-macos-x86_64
+        path: ./build/bin
+        if-no-files-found: error
+
+  osx-arm64:
+    runs-on: macos-12 
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Get Repo
+      run: |
+        curl -L https://github.com/aseprite/aseprite/releases/download/${{ github.event.inputs.aseprite-tag }}/Aseprite-${{ github.event.inputs.aseprite-tag }}-Source.zip --output ase.zip
+        unzip ase.zip -d ./
+        rm ase.zip
+
+    - name: Get Skia Pre-Built arm64
+      run: |
+        sudo rm -rf $HOME/deps/skia/
+        curl -L https://github.com/aseprite/skia/releases/download/m102-861e4743af/Skia-macOS-Release-arm64.zip -o skia.zip
+        mkdir -p $HOME/deps/skia
+        unzip skia.zip -d $HOME/deps/skia
+
+    - name: Generating Makefiles
+      run: |
+        cmake -S . -B build -G "Xcode" \
+          -DCMAKE_OSX_ARCHITECTURES=${{ matrix.architecture }} \
+          -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 \
+          -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk \
+          -DLAF_BACKEND=skia \
+          -DSKIA_DIR=$HOME/deps/skia \
+          -DSKIA_LIBRARY_DIR=$HOME/deps/skia/out/Release-arm64 \
+          -DSKIA_LIBRARY=$HOME/deps/skia/out/Release-arm64/libskia.a \
+          -DENABLE_TESTS=OFF \
+          -DENABLE_TESTS=OFF \
+          -DENABLE_CCACHE=OFF
+
+    - name: Compiling
+      run: |
+        cmake --build build/ --parallel 3 --config Release
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: aseprite-macos-arm64
+        path: ./build/bin
         if-no-files-found: error
