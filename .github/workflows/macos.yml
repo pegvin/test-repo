@@ -23,9 +23,11 @@ jobs:
         mkdir -p $HOME/deps/skia
         unzip skia.zip -d $HOME/deps/skia
 
+    - uses: seanmiddleditch/gha-setup-ninja@master
+
     - name: Generating Makefiles
       run: |
-        cmake -S . -B build -G "Xcode" \
+        cmake -S . -B build -G "Ninja" \
           -DCMAKE_OSX_ARCHITECTURES=x86_64 \
           -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 \
           -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk \
@@ -66,9 +68,11 @@ jobs:
         mkdir -p $HOME/deps/skia
         unzip skia.zip -d $HOME/deps/skia
 
+    - uses: seanmiddleditch/gha-setup-ninja@master
+
     - name: Generating Makefiles
       run: |
-        cmake -S . -B build -G "Xcode" \
+        cmake -S . -B build -G "Ninja" \
           -DCMAKE_OSX_ARCHITECTURES=arm64 \
           -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0 \
           -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk \
